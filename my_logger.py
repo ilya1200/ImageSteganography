@@ -30,7 +30,3 @@ def get_console_logger(logger_name: str, log_level=logging.DEBUG) -> logging.Log
     logger.addHandler(console_handler)
 
     return logger
-
-
-l = get_console_logger(__name__)
-l.debug("ssfaf")
