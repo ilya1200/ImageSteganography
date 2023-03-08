@@ -1,7 +1,5 @@
 import logging
-
-LOGGING_FORMAT: str = '[%(asctime)s][%(name)s][%(levelname)s %(levelno)s][%(process)d %(processName)s %(thread)d %(' \
-                      'threadName)s][%(filename)s %(funcName)s %(lineno)d]: %(message)s.'
+from omegaconf import OmegaConf
 
 
 def get_console_logger(logger_name: str, log_level=logging.DEBUG) -> logging.Logger:
@@ -12,6 +10,8 @@ def get_console_logger(logger_name: str, log_level=logging.DEBUG) -> logging.Log
     :param log_level: The logging level of the logger. Default is DEBUG.
     :return: The logger object.
     """
+    cfg = OmegaConf.load("config/config.yaml")
+
     # create logger
     logger = logging.getLogger(logger_name)
     logger.setLevel(log_level)
@@ -21,7 +21,7 @@ def get_console_logger(logger_name: str, log_level=logging.DEBUG) -> logging.Log
     console_handler.setLevel(log_level)
 
     # create formatter
-    formatter = logging.Formatter(LOGGING_FORMAT)
+    formatter = logging.Formatter(cfg.utils.logging_format)
 
     # add formatter to console handler
     console_handler.setFormatter(formatter)
@@ -30,3 +30,7 @@ def get_console_logger(logger_name: str, log_level=logging.DEBUG) -> logging.Log
     logger.addHandler(console_handler)
 
     return logger
+
+
+l = get_console_logger(__name__)
+l.debug("ssfaf")
