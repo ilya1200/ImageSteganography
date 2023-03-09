@@ -9,7 +9,7 @@ logger: Logger = my_logger.get_console_logger(__name__)
 
 
 class EncoderDecoder:
-    DELIMITER: str = "#####"
+    END_OF_MESSAGE_DELIMITER: str = "#####"
 
     @staticmethod
     def _message_to_binary(message) -> str:
@@ -40,7 +40,7 @@ class EncoderDecoder:
                 f"Error encountered insufficient bytes. Secret message is {len(secret_message)} bytes, but the image is {image_bytes} bytes.")
             raise ValueError("Error encountered insufficient bytes, need bigger image or less data !!")
 
-        secret_message += EncoderDecoder.DELIMITER
+        secret_message += EncoderDecoder.END_OF_MESSAGE_DELIMITER
 
         # Convert the cover image to a 1D numpy array
         image_1d: numpy.ndarray = image.flatten()
@@ -73,7 +73,11 @@ class EncoderDecoder:
         for i in range(0, len(hidden_data), 8):
             decoded_data += chr(int(hidden_data[i:i + 8], 2))
 
-        decoded_data = decoded_data.split(EncoderDecoder.DELIMITER)[0]
+        if EncoderDecoder.END_OF_MESSAGE_DELIMITER in decoded_data:
+            decoded_data = decoded_data.split(EncoderDecoder.END_OF_MESSAGE_DELIMITER)[0]
+        else:
+            logger.warning(f"The end of message delimiter: {EncoderDecoder.END_OF_MESSAGE_DELIMITER} not found in the decoded data.")
+
         logger.info(f"Decoded data:{decoded_data}")
         return decoded_data
 
