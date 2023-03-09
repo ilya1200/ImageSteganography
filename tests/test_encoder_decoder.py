@@ -33,3 +33,16 @@ def test_decode(image_path: str, secret_message: str):
 
     os.remove(stego_img_path)
     assert True
+
+
+@pytest.mark.parametrize("image_path, secret_message", [
+    (f"{base_directory}/images/balloons.png", "abc"),
+    (f"{base_directory}/images/squirrel.png", "123456")
+])
+def test_encode_decode(image_path: str, secret_message: str):
+    image: numpy.ndarray = cv2.imread(image_path)
+    stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
+    assert stego_img.size == image.size
+
+    decoded_data: str = EncoderDecoder.decode(stego_img)
+    assert decoded_data == secret_message
