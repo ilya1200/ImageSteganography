@@ -64,7 +64,3 @@ class EncoderDecoder:
         pass
 
 
-secret_message: str = "hi"
-image_array: list = cv2.imread("images/balloons.png")
-image: numpy.ndarray = numpy.array(image_array)
-EncoderDecoder.encode(image, secret_message)
