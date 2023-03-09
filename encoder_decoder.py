@@ -23,6 +23,3 @@ class EncoderDecoder:
     @staticmethod
     def decode(image) -> str:
         pass
-
-
-print(EncoderDecoder._message_to_binary("hello"))
