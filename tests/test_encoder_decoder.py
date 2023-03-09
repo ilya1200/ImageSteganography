@@ -18,7 +18,7 @@ def test_message_to_binary(secret_message):
         assert int(char) in (0, 1)
 
 
-@pytest.mark.parametrize("image_path, message", [
+@pytest.mark.parametrize("image_path, secret_message", [
     (f"{base_directory}/images/balloons.png", "Hello"),
     (f"{base_directory}/images/squirrel.png", "World")
 ])
