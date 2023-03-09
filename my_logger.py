@@ -1,6 +1,8 @@
 import logging
 from omegaconf import OmegaConf
 
+from base_directory import base_directory
+
 
 def get_console_logger(logger_name: str, log_level=logging.DEBUG) -> logging.Logger:
     """
@@ -10,7 +12,7 @@ def get_console_logger(logger_name: str, log_level=logging.DEBUG) -> logging.Log
     :param log_level: The logging level of the logger. Default is DEBUG.
     :return: The logger object.
     """
-    cfg = OmegaConf.load("config/config.yaml")
+    cfg = OmegaConf.load(f"{base_directory}/config/config.yaml")
 
     # create logger
     logger = logging.getLogger(logger_name)

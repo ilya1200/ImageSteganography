@@ -3,3 +3,4 @@ hydra-core
 omegaconf==2.3.0
 opencv-python==4.7.0.72
 numpy==1.24.2
+pytest==7.2.2
