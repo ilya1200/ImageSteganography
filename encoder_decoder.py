@@ -9,6 +9,7 @@ logger: Logger = my_logger.get_console_logger(__name__)
 
 
 class EncoderDecoder:
+    END_OF_MESSAGE_DELIMITER: str = "#####"
 
     @staticmethod
     def _message_to_binary(message) -> str:
@@ -28,7 +29,6 @@ class EncoderDecoder:
     @staticmethod
     def encode(image: numpy.ndarray, secret_message: str) -> numpy.ndarray:
         logger.info(f"Encoding {secret_message} into:\n{image}")
-        DELIMITER: str = "#####"
 
         # calculate the maximum bytes to encode
         image_bytes: int = image.shape[0] * image.shape[1] * 3
@@ -40,7 +40,7 @@ class EncoderDecoder:
                 f"Error encountered insufficient bytes. Secret message is {len(secret_message)} bytes, but the image is {image_bytes} bytes.")
             raise ValueError("Error encountered insufficient bytes, need bigger image or less data !!")
 
-        secret_message += DELIMITER
+        secret_message += EncoderDecoder.END_OF_MESSAGE_DELIMITER
 
         # Convert the cover image to a 1D numpy array
         image_1d: numpy.ndarray = image.flatten()
@@ -60,6 +60,25 @@ class EncoderDecoder:
 
     @staticmethod
     def decode(image: numpy.ndarray) -> str:
-        pass
+        logger.info(f"Decoding the image:\n{image}")
+        hidden_data: str = ''
+
+        # Extract LSB from color in each pixel
+        for row in image:
+            for pixel in row:
+                for value in pixel:
+                    hidden_data += bin(value)[-1]
+
+        decoded_data: str = ''
+        for i in range(0, len(hidden_data), 8):
+            decoded_data += chr(int(hidden_data[i:i + 8], 2))
+
+        if EncoderDecoder.END_OF_MESSAGE_DELIMITER in decoded_data:
+            decoded_data = decoded_data.split(EncoderDecoder.END_OF_MESSAGE_DELIMITER)[0]
+        else:
+            logger.warning(f"The end of message delimiter: {EncoderDecoder.END_OF_MESSAGE_DELIMITER} not found in the decoded data.")
+
+        logger.info(f"Decoded data:{decoded_data}")
+        return decoded_data
 
 
