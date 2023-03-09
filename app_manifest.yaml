@@ -1,0 +1,30 @@
+display_information:
+  name: ImageSteganography
+features:
+  bot_user:
+    display_name: ImageSteganography
+    always_online: false
+  slash_commands:
+    - command: /decipher
+      description: Get message from an image
+      usage_hint: file_name
+      should_escape: false
+oauth_config:
+  scopes:
+    bot:
+      - files:write
+      - files:read
+      - channels:history
+      - chat:write
+      - commands
+settings:
+  event_subscriptions:
+    bot_events:
+      - file_created
+      - file_shared
+      - message.channels
+  interactivity:
+    is_enabled: true
+  org_deploy_enabled: false
+  socket_mode_enabled: true
+  token_rotation_enabled: false
