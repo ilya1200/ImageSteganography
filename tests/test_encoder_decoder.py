@@ -22,8 +22,7 @@ def test_message_to_binary(secret_message):
     (f"{base_directory}/images/balloons.png", "Hello"),
     (f"{base_directory}/images/squirrel.png", "World")
 ])
-def test_decode(image_path: str, message):
-    secret_message: str = "hi"
+def test_decode(image_path: str, secret_message: str):
     image: numpy.ndarray = cv2.imread(image_path)
     stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
     assert stego_img.size == image.size
