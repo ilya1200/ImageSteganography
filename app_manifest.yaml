@@ -12,17 +12,18 @@ features:
 oauth_config:
   scopes:
     bot:
-      - files:write
-      - files:read
       - channels:history
       - chat:write
       - commands
+      - files:read
+      - files:write
+      - channels:read
+      - app_mentions:read
 settings:
   event_subscriptions:
     bot_events:
+      - app_mention
       - file_created
-      - file_shared
-      - message.channels
   interactivity:
     is_enabled: true
   org_deploy_enabled: false
