@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 from omegaconf import OmegaConf
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
+from slack_sdk.web import SlackResponse
+
+import utils
 from base_directory import base_directory
 from encoder_decoder import EncoderDecoder
 import my_logger
@@ -44,28 +47,8 @@ def handle_app_mention(event, say):
         return
 
     file: dict = files_in_message[0]
-    image: numpy.ndarray
-
-    try:
-        logger.info(f"Reading the image from url: {file['url_private_download']}")
-        with urllib.request.urlopen(file["url_private_download"]) as url:
-            # read image as an numpy array
-            image = numpy.asarray(bytearray(url.read()), dtype="uint8")
-            logger.debug("Read the image")
-
-            # Check that the image was read correctly
-            if image.shape == (0,):
-                raise ValueError("Image could not be read from URL")
-
-            # Decode the NumPy array as an image using OpenCV
-            image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-            logger.debug("Decoded the image")
-    except urllib.error.HTTPError as e:
-        logger.error("HTTP error: %s", e)
-    except ValueError as e:
-        logger.error("Error reading image from URL: %s", e)
-    except Exception as e:
-        logger.error("Error reading image from URL: %s", e)
+    image_path: str = utils.down_load_image(f"{base_directory}/images/downloads/{file['name']}", file['url_private_download'])
+    image: numpy.ndarray = cv2.imread(image_path)
 
     secret_message: str = text.split()[1]
     stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
