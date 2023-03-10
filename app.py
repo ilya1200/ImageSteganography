@@ -18,7 +18,7 @@ SLACK_APP_TOKEN: str = os.environ["SLACK_APP_TOKEN"]
 SLACK_BOT_TOKEN: str = os.environ["SLACK_BOT_TOKEN"]
 
 logger: Logger = my_logger.get_console_logger(__name__)
-app: App = App(token=SLACK_BOT_TOKEN, name="Joke Bot")
+app: App = App(token=SLACK_BOT_TOKEN, name="ImageSteganography")
 cfg = OmegaConf.load(f"{base_directory}/config/config.yaml")
 
 # Set the channel ID where you want to listen for file uploads
