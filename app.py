@@ -62,9 +62,33 @@ def handle_app_mention(event, say):
     stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
     logger.debug(f"Encoded the message: {secret_message} into the image.")
 
-    files_storage[file["name"]] = {"file_name": file["name"], "file": file, "secret_message": secret_message,
-                                   "stego_img": stego_img}
+    files_storage[file["name"]] = {"file_name": file["name"], "file": file, "stego_img": stego_img}
     say("Message encoded. Use the /decipher command with the file_name to retrieve the secret message.")
+
+
+@app.command("/decipher")
+def handle_command(ack, respond, command):
+    ack(f"Received command: {command['text']}")
+    channel_id: str = command["channel_id"]
+    text: str = command["text"].strip()
+    if not (channel_id == watch_channel_id):
+        respond(f"To decipher and image, use /decipher command in channel: {watch_channel_id}")
+        return
+    if not text:
+        respond(f"File name to decode is missing")
+        return
+    files_to_decode: List[str] = text.split()
+
+    for file_name in files_to_decode:
+        if file_name not in files_storage:
+            logger.warning(f"Did not find a file with name: {file_name} in {str(list(files_storage.keys()))}")
+            respond(f"Did not find a file with name: {file_name} in {str(list(files_storage.keys()))}")
+        else:
+            logger.debug(f"Found a file with name: {file_name} in {str(list(files_storage.keys()))}")
+            secret_message: str = EncoderDecoder.decode(files_storage[file_name]["stego_image"])
+            logger.info(f"Deciphered the secret message from: {file_name}")
+            respond(f"The secret message in {file_name} is {secret_message}")
+    logger.info("/decipher command complete")
 
 
 def main():
