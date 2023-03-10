@@ -2,3 +2,4 @@ utils:
   logging_format: "[%(asctime)s][%(name)s][%(levelname)s %(levelno)s][%(process)d %(processName)s %(thread)d %(threadName)s][%(filename)s %(funcName)s %(lineno)d]: %(message)s."
 slack_bot:
   channel_id: C04T028GSJ2
+end_of_message_delimiter: "#####"
