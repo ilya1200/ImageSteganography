@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM python:3.10.6-slim-buster
 # Install necessary packages for OpenGL support
 RUN apt-get update && apt-get install -y \
     mesa-utils \
