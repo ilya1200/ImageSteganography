@@ -17,3 +17,5 @@ venv/
 # Ignore miscellaneous files
 .dockerignore
 .DS_Store
+
+Dockerfile
