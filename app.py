@@ -72,11 +72,18 @@ def handle_command(ack, respond, command):
     channel_id: str = command["channel_id"]
     text: str = command["text"].strip()
     if not (channel_id == watch_channel_id):
+        logger.debug(f"Got /decipher command in unexpected channel: {channel_id}. Should be used in channel: {channel_id}")
         respond(f"To decipher and image, use /decipher command in channel: {watch_channel_id}")
         return
     if not text:
+        logger.debug(f"File names to decipher are missing")
         respond(f"File name to decode is missing")
         return
+    if not files_storage:
+        logger.debug("files_storage is empty")
+        respond("No file were encoded..")
+        return
+
     files_to_decode: List[str] = text.split()
 
     for file_name in files_to_decode:

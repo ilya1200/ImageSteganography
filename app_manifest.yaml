@@ -7,7 +7,7 @@ features:
   slash_commands:
     - command: /decipher
       description: Get message from an image
-      usage_hint: file_name
+      usage_hint: file1 file2 file3 ...
       should_escape: false
 oauth_config:
   scopes:
