@@ -11,6 +11,7 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 from base_directory import base_directory
 from encoder_decoder import EncoderDecoder
 import my_logger
+from urllib.error import HTTPError
 
 load_dotenv()
 SLACK_APP_TOKEN: str = os.environ["SLACK_APP_TOKEN"]
@@ -33,7 +34,7 @@ files_storage: Dict[str, Dict] = dict()
 def handle_app_mention(event, say):
     text: str = event["text"]
     channel: str = event["channel"]
-    logger.info(f"Got app_mention event from channel: {channel}, text: {text}")
+    logger.info(f"Got app_mention event from channel: {channel}")
 
     files_in_message: List[Dict] = event["files"]
     say(f"You mentioned me in <#{channel}>: '{text}'")
@@ -52,9 +53,17 @@ def handle_app_mention(event, say):
             image = numpy.asarray(bytearray(url.read()), dtype="uint8")
             logger.debug("Read the image")
 
-            # use imdecode function
+            # Check that the image was read correctly
+            if image.shape == (0,):
+                raise ValueError("Image could not be read from URL")
+
+            # Decode the NumPy array as an image using OpenCV
             image = cv2.imdecode(image, cv2.IMREAD_COLOR)
             logger.debug("Decoded the image")
+    except urllib.error.HTTPError as e:
+        logger.error("HTTP error: %s", e)
+    except ValueError as e:
+        logger.error("Error reading image from URL: %s", e)
     except Exception as e:
         logger.error("Error reading image from URL: %s", e)
 
@@ -63,7 +72,8 @@ def handle_app_mention(event, say):
     logger.debug(f"Encoded the message: {secret_message} into the image.")
 
     files_storage[file["name"]] = {"file_name": file["name"], "file": file, "stego_img": stego_img}
-    say("Message encoded. Use the /decipher command with the file_name to retrieve the secret message.")
+    say("Message encoded successfully.\nTo decode the message, use the /decipher command with the file_name to "
+        "retrieve the secret message.")
 
 
 @app.command("/decipher")
