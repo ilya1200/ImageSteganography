@@ -12,7 +12,7 @@ import utils
 from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
 from base_directory import base_directory
 from ImageSteganographyServer.encoder_decoder import EncoderDecoder
-from storage.user_image_entry import UserImageEntry
+from ImageSteganographyServer.storage.user_image_entry import UserImageEntry
 
 load_dotenv()
 SLACK_APP_TOKEN: str = os.environ["SLACK_APP_TOKEN"]

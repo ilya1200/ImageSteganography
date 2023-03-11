@@ -1,4 +1,4 @@
-from storage.user_images_storage import UserImagesStorage
+from ImageSteganographyServer.storage.user_images_storage import UserImagesStorage
 
 
 class ImageSteganographyServer:

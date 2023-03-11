@@ -3,7 +3,7 @@ from logging import Logger
 from typing import List, Dict
 import my_logger
 from base_directory import base_directory
-from storage.user_image_entry import UserImageEntry
+from ImageSteganographyServer.storage.user_image_entry import UserImageEntry
 
 logger: Logger = my_logger.get_console_logger(__name__)
 
