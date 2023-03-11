@@ -12,6 +12,11 @@ class TestUserImagesStorage:
         with open(UserImagesStorage.STORAGE_PATH, "w") as outfile:
             json.dump(dict(), outfile)
 
+    def teardown_class(self):
+        UserImagesStorage.STORAGE_PATH = f"{base_directory}/storage/user_images_testing.json"
+        with open(UserImagesStorage.STORAGE_PATH, "w") as outfile:
+            json.dump(dict(), outfile)
+
     def test_reset(self):
         uie_name: str = "aaa"
         img: list = [[[111, 112, 113], [121, 144, 221], [0, 255, 70], [17, 222, 37]],
