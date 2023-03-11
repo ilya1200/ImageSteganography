@@ -4,7 +4,7 @@ import pytest
 import secrets
 import string
 from base_directory import base_directory
-from encoder_decoder import EncoderDecoder
+from ImageSteganographyServer.encoder_decoder import EncoderDecoder
 
 
 @pytest.mark.parametrize("secret_message", [
