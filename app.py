@@ -1,20 +1,16 @@
 import os
 from logging import Logger
 from typing import List, Dict
-import urllib.request
 import cv2
 import numpy
 from dotenv import load_dotenv
 from omegaconf import OmegaConf
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
-from slack_sdk.web import SlackResponse
-
+import my_logger
 import utils
 from base_directory import base_directory
 from encoder_decoder import EncoderDecoder
-import my_logger
-from urllib.error import HTTPError
 
 load_dotenv()
 SLACK_APP_TOKEN: str = os.environ["SLACK_APP_TOKEN"]
@@ -47,7 +43,7 @@ def handle_app_mention(event, say):
         return
 
     file: dict = files_in_message[0]
-    image_path: str = utils.down_load_image(f"{base_directory}/images/downloads/{file['name']}", file['url_private_download'])
+    image_path: str = utils.down_load_image(f"{base_directory}/images/{file['name']}", file['url_private_download'])
     image: numpy.ndarray = cv2.imread(image_path)
 
     secret_message: str = text.split()[1]
@@ -55,18 +51,21 @@ def handle_app_mention(event, say):
     logger.debug(f"Encoded the message: {secret_message} into the image.")
 
     files_storage[file["name"]] = {"file_name": file["name"], "file": file, "stego_img": stego_img}
-    say("Message encoded successfully.\nTo decode the message, use the /decipher command with the file_name to "
+    say(f"Message {secret_message} encoded successfully into image {file['name']}.\nTo decode the message, use the "
+        f"decipher command with the file_name to"
         "retrieve the secret message.")
 
 
 @app.command("/decipher")
 def handle_command(ack, respond, command):
-    ack(f"Received command: {command['text']}")
+    ack(f"Received decipher command with args: {command['text']}")
+    logger.info(f"Received decipher command with args: {command['text']}")
+
     channel_id: str = command["channel_id"]
     text: str = command["text"].strip()
     if not (channel_id == watch_channel_id):
         logger.debug(f"Got /decipher command in unexpected channel: {channel_id}. Should be used in channel: {channel_id}")
-        respond(f"To decipher and image, use /decipher command in channel: {watch_channel_id}")
+        respond(f"To decipher an image, use decipher command in channel: {watch_channel_id}")
         return
     if not text:
         logger.debug(f"File names to decipher are missing")
