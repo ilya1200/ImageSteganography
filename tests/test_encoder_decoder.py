@@ -37,8 +37,9 @@ def test_decode(encoded_image_path: str, expected_secret_message: str):
 def test_encode_decode(image_path: str, secret_message: str):
     # Encode secret message into image in image_path
     image: numpy.ndarray = cv2.imread(image_path)
+    orig_image_size: int = image.size
     stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
-    assert stego_img.size == image.size
+    assert stego_img.size == orig_image_size
 
     # Decode secret message back from the encoded image
     decoded_data: str = EncoderDecoder.decode(stego_img)
