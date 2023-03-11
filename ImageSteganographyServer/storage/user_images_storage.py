@@ -9,7 +9,7 @@ logger: Logger = my_logger.get_console_logger(__name__)
 
 
 class UserImagesStorage:
-    STORAGE_PATH: str = f"{base_directory}/storage/user_images.json"
+    STORAGE_PATH: str = f"{base_directory}/ImageSteganographyServer/storage/user_images.json"
 
     @staticmethod
     def _read() -> Dict[str, List]:

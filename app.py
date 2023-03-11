@@ -41,7 +41,7 @@ def handle_app_mention(event, say):
         return
 
     file: dict = files_in_message[0]
-    image_path: str = utils.down_load_image(f"{base_directory}/images/{file['name']}", file['url_private_download'])
+    image_path: str = utils.down_load_image(f"{base_directory}/ImageSteganographyServer/images/{file['name']}", file['url_private_download'])
     image: numpy.ndarray = cv2.imread(image_path)
     os.remove(image_path)
 
