@@ -6,7 +6,6 @@ from ImageSteganographyServer.storage.user_images_storage import UserImagesStora
 
 
 class TestUserImagesStorage:
-    UserImagesStorage.STORAGE_PATH: str = str()
 
     def setup_class(self):
         UserImagesStorage.STORAGE_PATH = f"{base_directory}/ImageSteganographyServer/storage_testing/user_images_testing.json"
