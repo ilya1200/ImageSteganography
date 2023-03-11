@@ -1,20 +1,16 @@
 import os
 from logging import Logger
 from typing import List, Dict
-import urllib.request
 import cv2
 import numpy
 from dotenv import load_dotenv
 from omegaconf import OmegaConf
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
-from slack_sdk.web import SlackResponse
-
+import my_logger
 import utils
 from base_directory import base_directory
 from encoder_decoder import EncoderDecoder
-import my_logger
-from urllib.error import HTTPError
 
 load_dotenv()
 SLACK_APP_TOKEN: str = os.environ["SLACK_APP_TOKEN"]
