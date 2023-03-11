@@ -20,8 +20,8 @@ def test_message_to_binary(secret_message):
 
 
 @pytest.mark.parametrize("encoded_image_path, expected_secret_message", [
-    (f"{base_directory}/images_for_testing/encoded/Hello_balloons.png", "Hello"),
-    (f"{base_directory}/images_for_testing/encoded/World_squirrel.png", "World")
+    (f"{base_directory}/ImageSteganographyServer/images_for_testing/encoded/Hello_balloons.png", "Hello"),
+    (f"{base_directory}/ImageSteganographyServer/images_for_testing/encoded/World_squirrel.png", "World")
 ])
 def test_decode(encoded_image_path: str, expected_secret_message: str):
     encoded_image: numpy.ndarray = cv2.imread(encoded_image_path)
@@ -30,9 +30,9 @@ def test_decode(encoded_image_path: str, expected_secret_message: str):
 
 
 @pytest.mark.parametrize("image_path, secret_message", [
-    (f"{base_directory}/images_for_testing/not_encoded/balloons.png", "abc"),
-    (f"{base_directory}/images_for_testing/not_encoded/squirrel.png", "123456"),
-    (f"{base_directory}/images_for_testing/not_encoded/squirrel.png", "")
+    (f"{base_directory}/ImageSteganographyServer/images_for_testing/not_encoded/balloons.png", "abc"),
+    (f"{base_directory}/ImageSteganographyServer/images_for_testing/not_encoded/squirrel.png", "123456"),
+    (f"{base_directory}/ImageSteganographyServer/images_for_testing/not_encoded/squirrel.png", "")
 ])
 def test_encode_decode(image_path: str, secret_message: str):
     # Encode secret message into image in image_path
@@ -47,8 +47,8 @@ def test_encode_decode(image_path: str, secret_message: str):
 
 
 @pytest.mark.parametrize("image_path", [
-    f"{base_directory}/images_for_testing/not_encoded/balloons.png",
-    f"{base_directory}/images_for_testing/not_encoded/squirrel.png",
+    f"{base_directory}/ImageSteganographyServer/images_for_testing/not_encoded/balloons.png",
+    f"{base_directory}/ImageSteganographyServer/images_for_testing/not_encoded/squirrel.png",
 ])
 def test_encode_too_large_message(image_path: str):
     # Encode secret message into image in image_path
