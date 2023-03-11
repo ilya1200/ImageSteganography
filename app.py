@@ -29,23 +29,51 @@ BOT_ID = os.environ["BOT_ID"]
 
 @app.event("app_mention")
 def handle_app_mention(event, say):
+    logger.info(f"Got app_mention event")
     text: str = event["text"]
     channel: str = event["channel"]
-    logger.info(f"Got app_mention event from channel: {channel}")
 
-    files_in_message: List[Dict] = event["files"]
     say(f"You mentioned me in <#{channel}>: '{text}'")
-    if not (channel == watch_channel_id and len(text.split()) == 2 and len(files_in_message) == 1):
-        logger.warning("Message should start with the app mention then the text to encode, also only one image should "
-                       "be attached")
+    text = text.strip()
+    if not channel == watch_channel_id:
+        logger.debug(f"The event is not form the defined channel {watch_channel_id}, but actually from {channel=}")
         return
 
+    args: List[str] = text.split()
+    if BOT_ID not in args[0]:
+        error_msg: str = "The bot should be mentioned first and then a message to encrypt"
+        logger.error(error_msg)
+        say(error_msg)
+        return
+
+    if len(args[1:]) < 1:
+        error_msg: str = "The message to encrypt is missing"
+        logger.error(error_msg)
+        say(error_msg)
+        return
+
+    if "files" not in event:
+        error_msg: str = "No file attached to the request"
+        logger.error(error_msg)
+        say(error_msg)
+        return
+    files_in_message: List[Dict] = event["files"]
+
+    if len(files_in_message) > 1:
+        error_msg: str = f"Expected only one file to be attached, but got {len(files_in_message)}"
+        logger.warning(error_msg)
+        say(error_msg)
+        return
+
+    secret_message: str = args[1]
     file: dict = files_in_message[0]
-    image_path: str = utils.down_load_image(f"{base_directory}/ImageSteganographyServer/images/{file['name']}", file['url_private_download'])
+    say(f"Encrypting the message {secret_message} into image {file['name']}")
+
+    image_path: str = utils.down_load_image(f"{base_directory}/ImageSteganographyServer/images/{file['name']}",
+                                            file['url_private_download'])
     image: numpy.ndarray = cv2.imread(image_path)
     os.remove(image_path)
 
-    secret_message: str = text.split()[1]
     stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
     logger.debug(f"Encoded the message: {secret_message} into the image.")
 
@@ -64,7 +92,8 @@ def handle_command(ack, respond, command):
     channel_id: str = command["channel_id"]
     text: str = command["text"].strip()
     if not (channel_id == watch_channel_id):
-        logger.debug(f"Got /decipher command in unexpected channel: {channel_id}. Should be used in channel: {channel_id}")
+        logger.debug(
+            f"Got /decipher command in unexpected channel: {channel_id}. Should be used in channel: {channel_id}")
         respond(f"To decipher an image, use decipher command in channel: {watch_channel_id}")
         return
     if not text:
