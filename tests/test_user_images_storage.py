@@ -1,19 +1,18 @@
 import json
 from typing import List
 from base_directory import base_directory
-from storage.user_image_entry import UserImageEntry
-from storage.user_images_storage import UserImagesStorage
+from ImageSteganographyServer.storage.user_image_entry import UserImageEntry
+from ImageSteganographyServer.storage.user_images_storage import UserImagesStorage
 
 
 class TestUserImagesStorage:
 
     def setup_class(self):
-        UserImagesStorage.STORAGE_PATH = f"{base_directory}/storage/user_images_testing.json"
+        UserImagesStorage.STORAGE_PATH = f"{base_directory}/ImageSteganographyServer/storage_testing/user_images_testing.json"
         with open(UserImagesStorage.STORAGE_PATH, "w") as outfile:
             json.dump(dict(), outfile)
 
     def teardown_class(self):
-        UserImagesStorage.STORAGE_PATH = f"{base_directory}/storage/user_images_testing.json"
         with open(UserImagesStorage.STORAGE_PATH, "w") as outfile:
             json.dump(dict(), outfile)
 

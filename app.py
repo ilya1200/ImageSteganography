@@ -8,11 +8,11 @@ from omegaconf import OmegaConf
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 import my_logger
-import utils
+from ImageSteganographyServer import utils
 from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
 from base_directory import base_directory
-from encoder_decoder import EncoderDecoder
-from storage.user_image_entry import UserImageEntry
+from ImageSteganographyServer.encoder_decoder import EncoderDecoder
+from ImageSteganographyServer.storage.user_image_entry import UserImageEntry
 
 load_dotenv()
 SLACK_APP_TOKEN: str = os.environ["SLACK_APP_TOKEN"]
@@ -41,7 +41,7 @@ def handle_app_mention(event, say):
         return
 
     file: dict = files_in_message[0]
-    image_path: str = utils.down_load_image(f"{base_directory}/images/{file['name']}", file['url_private_download'])
+    image_path: str = utils.down_load_image(f"{base_directory}/ImageSteganographyServer/images/{file['name']}", file['url_private_download'])
     image: numpy.ndarray = cv2.imread(image_path)
     os.remove(image_path)
 
