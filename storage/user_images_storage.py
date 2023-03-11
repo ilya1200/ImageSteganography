@@ -80,14 +80,18 @@ class UserImagesStorage:
         return user_images_entry
 
     @staticmethod
-    def reset():
+    def reset() -> List[UserImageEntry]:
+        content: List[UserImageEntry] = UserImagesStorage.as_list()
         UserImagesStorage._write(dict())
-        actual_len: int = UserImagesStorage.length()
-        if actual_len > 0:
-            error_msg: str = f"Failed to delete all data in the storage. There are {actual_len} remaining items in {UserImagesStorage.STORAGE_PATH}"
+        remaining_images: int = UserImagesStorage.length()
+        if remaining_images > 0:
+            error_msg: str = f"Failed to delete all data in the storage. There are {remaining_images} " \
+                             f"remaining images in {UserImagesStorage.STORAGE_PATH}"
             logger.error(error_msg)
             raise Exception(error_msg)
+
         logger.info("Storage was reset")
+        return content
 
 
 
