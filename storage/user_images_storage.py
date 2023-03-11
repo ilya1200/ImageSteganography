@@ -33,6 +33,12 @@ class UserImagesStorage:
         return length
 
     @staticmethod
+    def is_empty() -> bool:
+        is_empty: bool = UserImagesStorage.length() == 0
+        logger.info(f"Storage {is_empty=}")
+        return is_empty
+
+    @staticmethod
     def as_list() -> List[UserImageEntry]:
         user_images_dict: Dict[str, List] = UserImagesStorage._read()
         user_images: List[UserImageEntry] = list()

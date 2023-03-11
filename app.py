@@ -9,8 +9,10 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 import my_logger
 import utils
+from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
 from base_directory import base_directory
 from encoder_decoder import EncoderDecoder
+from storage.user_image_entry import UserImageEntry
 
 load_dotenv()
 SLACK_APP_TOKEN: str = os.environ["SLACK_APP_TOKEN"]
@@ -23,10 +25,6 @@ cfg = OmegaConf.load(f"{base_directory}/config/config.yaml")
 # Set the channel ID where you want to listen for file uploads
 watch_channel_id = cfg.slack_bot.channel_id
 BOT_ID = os.environ["BOT_ID"]
-
-enciphered_files: List[Dict] = list()
-
-files_storage: Dict[str, Dict] = dict()
 
 
 @app.event("app_mention")
@@ -45,14 +43,16 @@ def handle_app_mention(event, say):
     file: dict = files_in_message[0]
     image_path: str = utils.down_load_image(f"{base_directory}/images/{file['name']}", file['url_private_download'])
     image: numpy.ndarray = cv2.imread(image_path)
+    os.remove(image_path)
 
     secret_message: str = text.split()[1]
     stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
     logger.debug(f"Encoded the message: {secret_message} into the image.")
 
-    files_storage[file["name"]] = {"file_name": file["name"], "file": file, "stego_img": stego_img}
-    say(f"Message {secret_message} encoded successfully into image {file['name']}.\nTo decode the message, use the "
-        f"decipher command with the file_name to"
+    user_image_entry: UserImageEntry = UserImageEntry(name=file["name"], image=stego_img.tolist())
+    ImageSteganographyServer.user_images_storage.write_user_image(user_image_entry)
+    say(f"Message {secret_message} encoded successfully into image {user_image_entry.name}.\n"
+        f"To decode the message, use the decipher command with the file_name to"
         "retrieve the secret message.")
 
 
@@ -71,7 +71,7 @@ def handle_command(ack, respond, command):
         logger.debug(f"File names to decipher are missing")
         respond(f"File name to decode is missing")
         return
-    if not files_storage:
+    if ImageSteganographyServer.user_images_storage.is_empty():
         logger.debug("files_storage is empty")
         respond("No file were encoded..")
         return
@@ -79,12 +79,14 @@ def handle_command(ack, respond, command):
     files_to_decode: List[str] = text.split()
 
     for file_name in files_to_decode:
-        if file_name not in files_storage:
-            logger.warning(f"Did not find a file with name: {file_name} in {str(list(files_storage.keys()))}")
-            respond(f"Did not find a file with name: {file_name} in {str(list(files_storage.keys()))}")
+        uie: UserImageEntry = ImageSteganographyServer.user_images_storage.read_user_image(file_name)
+        if not ImageSteganographyServer.user_images_storage.is_image_in_storage(file_name):
+            error_msg: str = f"Did not find a file with name: {file_name} in the storage"
+            logger.warning(error_msg)
+            respond(error_msg)
         else:
-            logger.debug(f"Found a file with name: {file_name} in {str(list(files_storage.keys()))}")
-            secret_message: str = EncoderDecoder.decode(files_storage[file_name]["stego_image"])
+            logger.debug(f"Found a file with name: {file_name} in the storage")
+            secret_message: str = EncoderDecoder.decode(numpy.array(uie.image))
             logger.info(f"Deciphered the secret message from: {file_name}")
             respond(f"The secret message in {file_name} is {secret_message}")
     logger.info("/decipher command complete")
