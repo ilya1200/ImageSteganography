@@ -29,14 +29,17 @@ def test_decode(encoded_image_path: str, expected_secret_message: str):
 
 
 @pytest.mark.parametrize("image_path, secret_message", [
-    (f"{base_directory}/images/balloons.png", "abc"),
-    (f"{base_directory}/images/squirrel.png", "123456")
+    (f"{base_directory}/images_for_testing/not_encoded/balloons.png", "abc"),
+    (f"{base_directory}/images_for_testing/not_encoded/squirrel.png", "123456"),
+    (f"{base_directory}/images_for_testing/not_encoded/squirrel.png", "")
 ])
 def test_encode_decode(image_path: str, secret_message: str):
+    # Encode secret message into image in image_path
     image: numpy.ndarray = cv2.imread(image_path)
     stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
     assert stego_img.size == image.size
 
+    # Decode secret message back from the encoded image
     decoded_data: str = EncoderDecoder.decode(stego_img)
     assert decoded_data == secret_message
 
