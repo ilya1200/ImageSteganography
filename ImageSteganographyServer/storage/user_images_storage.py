@@ -3,13 +3,13 @@ from logging import Logger
 from typing import List, Dict
 import my_logger
 from base_directory import base_directory
-from storage.user_image_entry import UserImageEntry
+from ImageSteganographyServer.storage.user_image_entry import UserImageEntry
 
 logger: Logger = my_logger.get_console_logger(__name__)
 
 
 class UserImagesStorage:
-    STORAGE_PATH: str = f"{base_directory}/storage/user_images.json"
+    STORAGE_PATH: str = f"{base_directory}/ImageSteganographyServer/storage/user_images.json"
 
     @staticmethod
     def _read() -> Dict[str, List]:
