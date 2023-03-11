@@ -13,5 +13,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 COPY . /app
+RUN rm -r /app/requirements.txt /app/*/__pycache__/
 EXPOSE 3000
 CMD ["python", "app.py"]
