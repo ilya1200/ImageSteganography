@@ -52,18 +52,20 @@ def handle_app_mention(event, say):
 
     files_storage[file["name"]] = {"file_name": file["name"], "file": file, "stego_img": stego_img}
     say(f"Message {secret_message} encoded successfully into image {file['name']}.\nTo decode the message, use the "
-        f"/decipher command with the file_name to"
+        f"decipher command with the file_name to"
         "retrieve the secret message.")
 
 
 @app.command("/decipher")
 def handle_command(ack, respond, command):
-    ack(f"Received command: {command['text']}")
+    ack(f"Received decipher command with args: {command['text']}")
+    logger.info(f"Received decipher command with args: {command['text']}")
+
     channel_id: str = command["channel_id"]
     text: str = command["text"].strip()
     if not (channel_id == watch_channel_id):
         logger.debug(f"Got /decipher command in unexpected channel: {channel_id}. Should be used in channel: {channel_id}")
-        respond(f"To decipher and image, use /decipher command in channel: {watch_channel_id}")
+        respond(f"To decipher an image, use decipher command in channel: {watch_channel_id}")
         return
     if not text:
         logger.debug(f"File names to decipher are missing")
