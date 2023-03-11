@@ -1,5 +1,8 @@
 /venv/
 .idea
+/.pytest_cache/
 /tests/.pytest_cache/
 .env
-/images/
+/ImageSteganographyServer/images/
+/ImageSteganographyServer/images_for_testing/
+/ImageSteganographyServer/storage_testing/
