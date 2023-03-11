@@ -28,12 +28,32 @@ class EncoderDecoder:
         return binary_message
 
     @staticmethod
+    def calculate_lsb_encoding_capacity(image: numpy.ndarray) -> int:
+        """
+        :type image: numpy.ndarray
+        :param image: A 3-d array that represents an RGB image.
+        :return: The number of max number of bytes that can be encoded into the image using the LSB Steganography
+        Technique.
+        :rtype: int
+        """
+        max_bytes_capacity: int = -1
+        if image is None:
+            logger.error("Received Image value None")
+            raise ValueError("Image should not be None")
+        if image.ndim != 3:
+            logger.error(f"Image is not RGB, it's {image.ndim=}")
+            raise ValueError("Image should be a 3-d array")
+        max_bytes_capacity = image.shape[0] * image.shape[1] * 3 // 8
+        logger.info(f"The image has {max_bytes_capacity=} bytes.")
+        return max_bytes_capacity
+
+    @staticmethod
     def encode(image: numpy.ndarray, secret_message: str) -> numpy.ndarray:
         cfg = OmegaConf.load(f"{base_directory}/config/config.yaml")
         logger.info(f"Encoding {secret_message} into:\n{image}")
 
         # calculate the maximum bytes to encode
-        image_bytes: int = image.shape[0] * image.shape[1] * 3
+        image_bytes: int = EncoderDecoder.calculate_lsb_encoding_capacity(image)
         logger.debug(f"Maximum bytes to encode:{image_bytes}")
 
         # Check if the number of bytes to encode is less than the maximum bytes in the image
@@ -79,9 +99,8 @@ class EncoderDecoder:
         if cfg.end_of_message_delimiter in decoded_data:
             decoded_data = decoded_data.split(cfg.end_of_message_delimiter)[0]
         else:
-            logger.warning(f"The end of message delimiter: {cfg.end_of_message_delimiter} not found in the decoded data.")
+            logger.warning(
+                f"The end of message delimiter: {cfg.end_of_message_delimiter} not found in the decoded data.")
 
         logger.info(f"Decoded data:{decoded_data}")
         return decoded_data
-
-

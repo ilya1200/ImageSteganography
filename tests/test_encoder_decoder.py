@@ -46,3 +46,12 @@ def test_encode_decode(image_path: str, secret_message: str):
 
     decoded_data: str = EncoderDecoder.decode(stego_img)
     assert decoded_data == secret_message
+
+
+@pytest.mark.parametrize("image, expected_capacity", [
+    (numpy.array([[[111, 112, 113], [121, 144, 221], [0, 255, 70], [17, 222, 37]],
+                  [[55, 66, 77], [52, 16, 17], [5, 6, 7], [60, 70, 80]]]), 3)
+])
+def test_calculate_lsb_encoding_capacity(image: numpy.ndarray, expected_capacity: int):
+    actual_capacity: int = EncoderDecoder.calculate_lsb_encoding_capacity(image)
+    assert actual_capacity == expected_capacity
