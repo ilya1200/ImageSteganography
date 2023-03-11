@@ -38,11 +38,11 @@ class EncoderDecoder:
         """
         max_bytes_capacity: int = -1
         if image is None:
-            logger.error("Received Image value None")
+            logger.error("Image should not be None")
             raise ValueError("Image should not be None")
         if image.ndim != 3:
-            logger.error(f"Image is not RGB, it's {image.ndim=}")
-            raise ValueError("Image should be a 3-d array")
+            logger.error(f"Image is not 3-d array, it's {image.ndim=}")
+            raise ValueError(f"Image is not 3-d array, it's {image.ndim=}")
         max_bytes_capacity = image.shape[0] * image.shape[1] * 3 // 8
         logger.info(f"The image has {max_bytes_capacity=} bytes.")
         return max_bytes_capacity

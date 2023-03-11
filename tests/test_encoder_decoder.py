@@ -55,3 +55,18 @@ def test_encode_decode(image_path: str, secret_message: str):
 def test_calculate_lsb_encoding_capacity(image: numpy.ndarray, expected_capacity: int):
     actual_capacity: int = EncoderDecoder.calculate_lsb_encoding_capacity(image)
     assert actual_capacity == expected_capacity
+
+
+@pytest.mark.parametrize("image", [
+    None,
+    numpy.array(17),
+    numpy.array([1, 2, 3])
+])
+def test_negative_calculate_lsb_encoding_capacity(image: numpy.ndarray):
+    with pytest.raises(ValueError) as ve:
+        EncoderDecoder.calculate_lsb_encoding_capacity(image)
+    if image is None:
+        assert ve.value.args[0] == "Image should not be None"
+    else:
+        assert ve.value.args[0] == f"Image is not 3-d array, it's {image.ndim=}"
+
