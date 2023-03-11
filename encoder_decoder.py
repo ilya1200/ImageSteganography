@@ -60,7 +60,7 @@ class EncoderDecoder:
         if len(secret_message) > image_bytes:
             logger.error(
                 f"Error encountered insufficient bytes. Secret message is {len(secret_message)} bytes, but the image is {image_bytes} bytes.")
-            raise ValueError("Error encountered insufficient bytes, need bigger image or less data !!")
+            raise ValueError(f"Error encountered insufficient bytes. Secret message is {len(secret_message)} bytes, but the image is {image_bytes} bytes.")
 
         secret_message += cfg.end_of_message_delimiter
 

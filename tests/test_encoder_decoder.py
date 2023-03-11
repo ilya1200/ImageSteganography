@@ -1,7 +1,8 @@
 import cv2
 import numpy
 import pytest
-import os
+import secrets
+import string
 from base_directory import base_directory
 from encoder_decoder import EncoderDecoder
 
@@ -44,6 +45,25 @@ def test_encode_decode(image_path: str, secret_message: str):
     assert decoded_data == secret_message
 
 
+@pytest.mark.parametrize("image_path", [
+    f"{base_directory}/images_for_testing/not_encoded/balloons.png",
+    f"{base_directory}/images_for_testing/not_encoded/squirrel.png",
+])
+def test_encode_too_large_message(image_path: str):
+    # Encode secret message into image in image_path
+    image: numpy.ndarray = cv2.imread(image_path)
+    image_max_bytes_capacity: int = EncoderDecoder.calculate_lsb_encoding_capacity(image)
+    too_large_secret_message: str = ''.join(
+        secrets.choice(string.ascii_uppercase + string.digits) for i in range(int(image_max_bytes_capacity * 1.2)))
+
+    with pytest.raises(ValueError) as ve:
+        EncoderDecoder.encode(image, too_large_secret_message)
+
+    expected_error_message: str = f"Error encountered insufficient bytes. Secret message is {len(too_large_secret_message)} bytes, but the image is {image_max_bytes_capacity} bytes."
+    actual_error_message: str = ve.value.args[0]
+    assert expected_error_message == actual_error_message
+
+
 @pytest.mark.parametrize("image, expected_capacity", [
     (numpy.array([[[111, 112, 113], [121, 144, 221], [0, 255, 70], [17, 222, 37]],
                   [[55, 66, 77], [52, 16, 17], [5, 6, 7], [60, 70, 80]]]), 3)
@@ -65,4 +85,3 @@ def test_negative_calculate_lsb_encoding_capacity(image: numpy.ndarray):
         assert ve.value.args[0] == "Image should not be None"
     else:
         assert ve.value.args[0] == f"Image is not 3-d array, it's {image.ndim=}"
-
