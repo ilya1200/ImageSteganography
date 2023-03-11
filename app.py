@@ -47,7 +47,7 @@ def handle_app_mention(event, say):
         return
 
     file: dict = files_in_message[0]
-    image_path: str = utils.down_load_image(f"{base_directory}/images/downloads/{file['name']}", file['url_private_download'])
+    image_path: str = utils.down_load_image(f"{base_directory}/images/{file['name']}", file['url_private_download'])
     image: numpy.ndarray = cv2.imread(image_path)
 
     secret_message: str = text.split()[1]
@@ -55,7 +55,8 @@ def handle_app_mention(event, say):
     logger.debug(f"Encoded the message: {secret_message} into the image.")
 
     files_storage[file["name"]] = {"file_name": file["name"], "file": file, "stego_img": stego_img}
-    say("Message encoded successfully.\nTo decode the message, use the /decipher command with the file_name to "
+    say(f"Message {secret_message} encoded successfully into image {file['name']}.\nTo decode the message, use the "
+        f"/decipher command with the file_name to"
         "retrieve the secret message.")
 
 
