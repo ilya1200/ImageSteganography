@@ -8,7 +8,7 @@ from omegaconf import OmegaConf
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 import my_logger
-import utils
+from ImageSteganographyServer import utils
 from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
 from base_directory import base_directory
 from ImageSteganographyServer.encoder_decoder import EncoderDecoder
