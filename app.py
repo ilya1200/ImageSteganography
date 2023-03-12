@@ -70,7 +70,7 @@ def handle_app_mention(event, say):
 
     secret_message: str = re.sub(r'^\s*\S+\s*', '', text)
     file: dict = files_in_message[0]
-    say(f"Encrypting the message {secret_message} into image {file['name']}")
+    say(f"Encrypting the message {secret_message} into image {file['name']}...Will message, once done.")
 
     file_id: str = file["id"]
     file_info: SlackResponse = app.client.files_info(file=file_id)
@@ -83,7 +83,7 @@ def handle_app_mention(event, say):
     user_image_entry: UserImageEntry = UserImageEntry(name=file["name"], image=stego_img.tolist())
     ImageSteganographyServer.user_images_storage.write_user_image(user_image_entry)
     say(f"Message {secret_message} encoded successfully into image {user_image_entry.name}.\n"
-        f"To decode the message, use the decipher command with the file_name to"
+        f"To decode the message, use the decipher command with the image name to "
         "retrieve the secret message.")
 
 
