@@ -12,7 +12,6 @@ In this method, the information is hidden by replacing the least significant bit
 This project allows to encode and decode secret messages into and from images.
 
 
-
 ## The Slack Bot -
    Is the User Interface.
 
@@ -32,7 +31,7 @@ This project allows to encode and decode secret messages into and from images.
   * SLACK_BOT_TOKEN
   * BOT_ID
   * SLACK_CHANNEL_ID
-* For the app:
+* For the application:
   * A makenvfile  - will store the following Environment variables:
     1. SLACK_APP_TOKEN=<APP_TOKEN>
     2. SLACK_BOT_TOKEN=<BOT_TOKEN>
@@ -42,7 +41,8 @@ This project allows to encode and decode secret messages into and from images.
 
 
 ### Install
-1. Install the container
+1. Install the Slack Bot
+2. Install the application
    1. Create a makenvfile should contain the following Environment variables:
       1. SLACK_APP_TOKEN=<APP_TOKEN>
       2. SLACK_BOT_TOKEN=<BOT_TOKEN>
@@ -50,6 +50,7 @@ This project allows to encode and decode secret messages into and from images.
    2. Create an empty user_images.json - will be mounted to the volume and will store records about the images
    3. Open the Terminal
    4. docker pull ilya1200/image_steganography:v1.0.0
+   5. docker run --name <CUSTOM_NAME_FOR_THE_CONTAINER> -p 3000:3000 --env-file <PATH_TO_makenvfile> -v <PATH_TO_user_images.json>:/app/ImageSteganographyServer/storage/user_images.json -d ilya1200/image_steganography:v1.0.0
 
 
 ### Usage
