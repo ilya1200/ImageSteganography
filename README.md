@@ -31,7 +31,7 @@ This project allows to encode and decode secret messages into and from images.
   * SLACK_APP_TOKEN
   * SLACK_BOT_TOKEN
   * BOT_ID
-  * Channel_id
+  * SLACK_CHANNEL_ID
 
 ### Install
 1. Install the container
