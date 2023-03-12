@@ -42,7 +42,11 @@ This project allows to encode and decode secret messages into and from images.
     2. SLACK_BOT_TOKEN=<BOT_TOKEN>
     3. BOT_ID=<BOT_ID>
   * An empty user_images.json file - will be mounted to the docker and will store the encrypted images. 
-  The format of each entry: `{"name":<name_of_the_image>,"image":<image-a 3D array represents the image in RGB color>}`
+  The format of each entry: `{<name_of_the_image>:<image-a 3D array represents the image in RGB color>}`
+  * Pretty user_images.json example\
+  ![General look of user_images json](documentation/images/user_images_json_general.png)\
+  ![General look of user_images_entry](documentation/images/user_images_entry.png)
+
 
 
 ### How to install
