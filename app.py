@@ -35,8 +35,11 @@ def handle_app_mention(event, say):
     logger.info(f"Got app_mention event")
     text: str = event["text"]
     channel: str = event["channel"]
+    user: str = event["user"]
 
-    say(f"You mentioned me in <#{channel}>: '{text}'")
+    # Send the ephemeral message - visible only to the sender user
+
+    app.client.chat_postEphemeral(text=f"You mentioned me in <#{channel}>: '{text}'", channel=channel, user=user)
 
     if not channel == watch_channel_id:
         logger.debug(f"The event is not form the defined channel {watch_channel_id}, but actually from {channel=}")
@@ -70,7 +73,9 @@ def handle_app_mention(event, say):
 
     secret_message: str = re.sub(r'^\s*\S+\s*', '', text)
     file: dict = files_in_message[0]
-    say(f"Encrypting the message {secret_message} into image {file['name']}. You will get a message, when it is done.")
+    app.client.chat_postEphemeral(
+        text=f"Encrypting the message {secret_message} into image {file['name']}. "
+             f"You will get a message, when it is done.", channel=channel, user=user)
 
     file_id: str = file["id"]
     file_info: SlackResponse = app.client.files_info(file=file_id)
@@ -82,9 +87,10 @@ def handle_app_mention(event, say):
 
     user_image_entry: UserImageEntry = UserImageEntry(name=file["name"], image=stego_img.tolist())
     ImageSteganographyServer.user_images_storage.write_user_image(user_image_entry)
-    say(f"Message {secret_message} encoded successfully into image {user_image_entry.name}.\n"
-        f"To decode the message, use the decipher command with the image name to "
-        "retrieve the secret message.")
+    app.client.chat_postEphemeral(
+        text=f"Message {secret_message} encoded successfully into image {user_image_entry.name}.\n"
+             f"To decode the message, use the decipher command with the image name to "
+             "retrieve the secret message.", channel=channel, user=user)
 
 
 @app.command("/decipher")
