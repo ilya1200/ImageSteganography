@@ -11,6 +11,8 @@ In this method, the information is hidden by replacing the least significant bit
 ## Description
 This project allows to encode and decode secret messages into and from images.
 
+### Demo
+[Demo] (https://ilya-livshits.slab.com/posts/image-steganogaphy-demo-q2zgbryt)
 
 ## The Slack Bot
    #### How to send an encrypt message inside an image.
@@ -66,8 +68,3 @@ This project allows to encode and decode secret messages into and from images.
    3. Open the Terminal.
    4. `docker pull ilya1200/image_steganography:v1.0.0`
    5. `docker run --name <CUSTOM_NAME_FOR_THE_CONTAINER> -p 3000:3000 --env-file <PATH_TO_makenvfile> -v <PATH_TO_user_images.json>:/app/ImageSteganographyServer/storage/user_images.json -d ilya1200/image_steganography:v1.0.0`
-
-
-### Demo
-[Demo] (https://ilya-livshits.slab.com/posts/image-steganogaphy-demo-q2zgbryt)
-
