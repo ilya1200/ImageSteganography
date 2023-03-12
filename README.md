@@ -26,7 +26,12 @@ This project allows to encode and decode secret messages into and from images.
 
 
 ### Requirements
-* 
+* A Linux Ubuntu Host Machine
+* For the slack bot:
+  * SLACK_APP_TOKEN
+  * SLACK_BOT_TOKEN
+  * BOT_ID
+  * Channel_id
 
 ### Install
 1. Install the container
@@ -35,10 +40,8 @@ This project allows to encode and decode secret messages into and from images.
       2. SLACK_BOT_TOKEN=<BOT_TOKEN>
       3. BOT_ID=<BOT_ID>
    2. Create an empty user_images.json - will be mounted to the volume and will store records about the images
-   3. Open the terminal
-   4. Navigate to the 
-   5. docker build -t ilya1200/image_steganography:v1.0.0 .
-   6. docker run --name ImageSteganography -p 3000:3000 --env-file /home/ilya/ImageSteganography/makenvfile -v /home/ilya/ImageSteganography/user_images.json:/app/ImageSteganographyServer/storage/user_images.json -it ilya1200/image_steganography:v1.0.0
+   3. Open the Terminal
+   4. docker pull ilya1200/image_steganography:v1.0.0
 
 
 ### Usage
