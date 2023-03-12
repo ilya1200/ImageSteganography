@@ -13,7 +13,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 COPY . /app
-RUN rm -r /app/requirements.txt /app/*/__pycache__/
+RUN rm -r /app/requirements.txt /app/*/__pycache__/ /app/ImageSteganographyServer/storage/__pycache__/
 ENV PYTHONPATH=/app
+RUN echo {} > /app/ImageSteganographyServer/storage/user_images.json
+VOLUME ["/app/ImageSteganographyServer/storage/user_images.json"]
 EXPOSE 3000
 CMD ["python", "app.py"]
