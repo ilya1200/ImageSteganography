@@ -32,6 +32,14 @@ This project allows to encode and decode secret messages into and from images.
   * SLACK_BOT_TOKEN
   * BOT_ID
   * SLACK_CHANNEL_ID
+* For the app:
+  * A makenvfile  - will store the following Environment variables:
+    1. SLACK_APP_TOKEN=<APP_TOKEN>
+    2. SLACK_BOT_TOKEN=<BOT_TOKEN>
+    3. BOT_ID=<BOT_ID>
+  * An empty user_images.json file - will be mounted to the docker and will store the encrypted images. 
+  The format of each entry: `{"name":<name_of_the_image>,"image":<image-a 3D array represents the image in RGB color>}`
+
 
 ### Install
 1. Install the container
