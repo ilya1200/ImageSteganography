@@ -1,4 +1,5 @@
 import os
+import re
 from logging import Logger
 from typing import List, Dict
 
@@ -36,12 +37,12 @@ def handle_app_mention(event, say):
     channel: str = event["channel"]
 
     say(f"You mentioned me in <#{channel}>: '{text}'")
-    text = text.strip()
+
     if not channel == watch_channel_id:
         logger.debug(f"The event is not form the defined channel {watch_channel_id}, but actually from {channel=}")
         return
 
-    args: List[str] = text.split()
+    args: List[str] = text.strip().split()
     if BOT_ID not in args[0]:
         error_msg: str = "The bot should be mentioned first and then a message to encrypt"
         logger.error(error_msg)
@@ -67,7 +68,7 @@ def handle_app_mention(event, say):
         say(error_msg)
         return
 
-    secret_message: str = args[1:]
+    secret_message: str = re.sub(r'^\s*\S+\s*', '', text)
     file: dict = files_in_message[0]
     say(f"Encrypting the message {secret_message} into image {file['name']}")
 
