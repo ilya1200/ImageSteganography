@@ -12,7 +12,6 @@ from slack_sdk.web import SlackResponse
 
 import my_logger
 import slack_client_utils
-from ImageSteganographyServer.encoder_decoder import EncoderDecoder
 from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
 from ImageSteganographyServer.storage.user_image_entry import UserImageEntry
 from base_directory import base_directory
@@ -82,7 +81,7 @@ def handle_app_mention(event, say):
     image_url_in_slack: str = file_info["file"]["url_private"]
     image: numpy.ndarray = slack_client_utils.get_image_from_slack_url(image_url_in_slack)
 
-    stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
+    stego_img: numpy.ndarray = ImageSteganographyServer.encoder_decoder.encode(image, secret_message)
     logger.debug(f"Encoded the message: {secret_message} into the image.")
 
     user_image_entry: UserImageEntry = UserImageEntry(name=file["name"], image=stego_img.tolist())
@@ -124,7 +123,7 @@ def handle_command(ack, respond, command):
             respond(error_msg)
         else:
             logger.debug(f"Found a file with name: {file_name} in the storage")
-            secret_message: str = EncoderDecoder.decode(numpy.array(uie.image))
+            secret_message: str = ImageSteganographyServer.encoder_decoder.decode(numpy.array(uie.image))
             logger.info(f"Deciphered the secret message from: {file_name}")
             respond(f"The secret message in {file_name} is {secret_message}")
     logger.info("/decipher command complete")
