@@ -68,4 +68,6 @@ This project allows to encode and decode secret messages into and from images.
    5. docker run --name <CUSTOM_NAME_FOR_THE_CONTAINER> -p 3000:3000 --env-file <PATH_TO_makenvfile> -v <PATH_TO_user_images.json>:/app/ImageSteganographyServer/storage/user_images.json -d ilya1200/image_steganography:v1.0.0
 
 
-### Usage
+### Demo
+[Demo] (https://ilya-livshits.slab.com/posts/image-steganogaphy-demo-q2zgbryt)
+
