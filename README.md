@@ -12,7 +12,7 @@ In this method, the information is hidden by replacing the least significant bit
 This project allows to encode and decode secret messages into and from images.
 
 
-## The Slack Bot -
+## The Slack Bot
    Is the User Interface.
 
   * To encrypt a secret message into an image, send a Slack message. The message should follow these rules:
@@ -40,7 +40,7 @@ This project allows to encode and decode secret messages into and from images.
   The format of each entry: `{"name":<name_of_the_image>,"image":<image-a 3D array represents the image in RGB color>}`
 
 
-### Install
+### How to install
 1. Install the Slack Bot
 2. Install the application
    1. Create a makenvfile should contain the following Environment variables:
