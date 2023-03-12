@@ -19,6 +19,6 @@ venv/
 .idea
 /tests/.pytest_cache/
 .env
-/ImageSteganographyServer/images/
 /ImageSteganographyServer/images_for_testing/
 /ImageSteganographyServer/storage_testing/
+/ImageSteganographyServer/storage/user_images.json/

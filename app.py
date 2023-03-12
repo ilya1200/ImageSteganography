@@ -1,18 +1,21 @@
 import os
+import re
 from logging import Logger
 from typing import List, Dict
-import cv2
+
 import numpy
 from dotenv import load_dotenv
 from omegaconf import OmegaConf
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
+from slack_sdk.web import SlackResponse
+
 import my_logger
-from ImageSteganographyServer import utils
-from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
-from base_directory import base_directory
+import slack_client_utils
 from ImageSteganographyServer.encoder_decoder import EncoderDecoder
+from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
 from ImageSteganographyServer.storage.user_image_entry import UserImageEntry
+from base_directory import base_directory
 
 load_dotenv()
 SLACK_APP_TOKEN: str = os.environ["SLACK_APP_TOKEN"]
@@ -32,14 +35,17 @@ def handle_app_mention(event, say):
     logger.info(f"Got app_mention event")
     text: str = event["text"]
     channel: str = event["channel"]
+    user: str = event["user"]
 
-    say(f"You mentioned me in <#{channel}>: '{text}'")
-    text = text.strip()
+    # Send the ephemeral message - visible only to the sender user
+
+    app.client.chat_postEphemeral(text=f"You mentioned me in <#{channel}>: '{text}'", channel=channel, user=user)
+
     if not channel == watch_channel_id:
         logger.debug(f"The event is not form the defined channel {watch_channel_id}, but actually from {channel=}")
         return
 
-    args: List[str] = text.split()
+    args: List[str] = text.strip().split()
     if BOT_ID not in args[0]:
         error_msg: str = "The bot should be mentioned first and then a message to encrypt"
         logger.error(error_msg)
@@ -65,23 +71,26 @@ def handle_app_mention(event, say):
         say(error_msg)
         return
 
-    secret_message: str = args[1]
+    secret_message: str = re.sub(r'^\s*\S+\s*', '', text)
     file: dict = files_in_message[0]
-    say(f"Encrypting the message {secret_message} into image {file['name']}")
+    app.client.chat_postEphemeral(
+        text=f"Encrypting the message {secret_message} into image {file['name']}. "
+             f"You will get a message, when it is done.", channel=channel, user=user)
 
-    image_path: str = utils.down_load_image(f"{base_directory}/ImageSteganographyServer/images/{file['name']}",
-                                            file['url_private_download'])
-    image: numpy.ndarray = cv2.imread(image_path)
-    os.remove(image_path)
+    file_id: str = file["id"]
+    file_info: SlackResponse = app.client.files_info(file=file_id)
+    image_url_in_slack: str = file_info["file"]["url_private"]
+    image: numpy.ndarray = slack_client_utils.get_image_from_slack_url(image_url_in_slack)
 
     stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
     logger.debug(f"Encoded the message: {secret_message} into the image.")
 
     user_image_entry: UserImageEntry = UserImageEntry(name=file["name"], image=stego_img.tolist())
     ImageSteganographyServer.user_images_storage.write_user_image(user_image_entry)
-    say(f"Message {secret_message} encoded successfully into image {user_image_entry.name}.\n"
-        f"To decode the message, use the decipher command with the file_name to"
-        "retrieve the secret message.")
+    app.client.chat_postEphemeral(
+        text=f"Message {secret_message} encoded successfully into image {user_image_entry.name}.\n"
+             f"To decode the message, use the decipher command with the image name to "
+             "retrieve the secret message.", channel=channel, user=user)
 
 
 @app.command("/decipher")
