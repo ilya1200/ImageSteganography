@@ -1,7 +1,7 @@
 import os
 import re
 from logging import Logger
-from typing import List, Dict
+from typing import List, Dict, Any
 
 import numpy
 from dotenv import load_dotenv
@@ -13,7 +13,6 @@ from slack_sdk.web import SlackResponse
 import my_logger
 import slack_client_utils
 from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
-from ImageSteganographyServer.storage.user_image_entry import UserImageEntry
 from base_directory import base_directory
 
 load_dotenv()
@@ -37,7 +36,6 @@ def handle_app_mention(event, say):
     user: str = event["user"]
 
     # Send the ephemeral message - visible only to the sender user
-
     app.client.chat_postEphemeral(text=f"You mentioned me in <#{channel}>: '{text}'", channel=channel, user=user)
 
     if not channel == watch_channel_id:
@@ -76,18 +74,16 @@ def handle_app_mention(event, say):
         text=f"Encrypting the message {secret_message} into image {file['name']}. "
              f"You will get a message, when it is done.", channel=channel, user=user)
 
-    file_id: str = file["id"]
-    file_info: SlackResponse = app.client.files_info(file=file_id)
-    image_url_in_slack: str = file_info["file"]["url_private"]
-    image: numpy.ndarray = slack_client_utils.get_image_from_slack_url(image_url_in_slack)
+    file_info: SlackResponse = app.client.files_info(file=file["id"])
+    image: numpy.ndarray = slack_client_utils.get_image_from_slack_url(
+        image_url_in_slack=file_info["file"]["url_private"])
 
-    stego_img: numpy.ndarray = ImageSteganographyServer.encoder_decoder.encode(image, secret_message)
-    logger.debug(f"Encoded the message: {secret_message} into the image.")
+    stego_server_response: Dict[str, Any] = ImageSteganographyServer.encipher(secret_message=secret_message,
+                                                                              image_name=file["name"],
+                                                                              image=image)
 
-    user_image_entry: UserImageEntry = UserImageEntry(name=file["name"], image=stego_img.tolist())
-    ImageSteganographyServer.user_images_storage.write_user_image(user_image_entry)
     app.client.chat_postEphemeral(
-        text=f"Message {secret_message} encoded successfully into image {user_image_entry.name}.\n"
+        text=f"Message {secret_message} encoded successfully into image {stego_server_response['name']}.\n"
              f"To decode the message, use the decipher command with the image name to "
              "retrieve the secret message.", channel=channel, user=user)
 
@@ -113,19 +109,32 @@ def handle_command(ack, respond, command):
         respond("No file were encoded..")
         return
 
-    files_to_decode: List[str] = text.split()
+    images_to_decode: List[str] = text.split()
+    not_found_images: List[str] = list(
+        filter(lambda image_name: not ImageSteganographyServer.user_images_storage.is_image_in_storage(image_name),
+               images_to_decode))
 
-    for file_name in files_to_decode:
-        uie: UserImageEntry = ImageSteganographyServer.user_images_storage.read_user_image(file_name)
-        if not ImageSteganographyServer.user_images_storage.is_image_in_storage(file_name):
-            error_msg: str = f"Did not find a file with name: {file_name} in the storage"
+    if len(not_found_images) > 0:
+        error_msg: str = f"Did not find these images in the storage: {not_found_images} "
+
+        if len(not_found_images) == len(images_to_decode):
+            error_msg: str = f"None of the requested images found in the storage: {images_to_decode} "
             logger.warning(error_msg)
             respond(error_msg)
-        else:
-            logger.debug(f"Found a file with name: {file_name} in the storage")
-            secret_message: str = ImageSteganographyServer.encoder_decoder.decode(numpy.array(uie.image))
-            logger.info(f"Deciphered the secret message from: {file_name}")
-            respond(f"The secret message in {file_name} is {secret_message}")
+            return
+
+        logger.warning(error_msg)
+        respond(error_msg)
+
+    # Filter the images that were requested by the user and are present in the storage
+    existing_images_to_decode: List[str] = list(filter(lambda image_to_decode: image_to_decode not in not_found_images,
+                                              images_to_decode))
+    logger.debug(f"Deciphering the following images {existing_images_to_decode}")
+    respond(f"Deciphering the following images {existing_images_to_decode}\nYou will get a message, when it is done.")
+
+    for image_name in existing_images_to_decode:
+        secret_message: str = ImageSteganographyServer.decipher(image_name)
+        respond(f"The secret message in {image_name} is {secret_message}")
     logger.info("/decipher command complete")
 
 
