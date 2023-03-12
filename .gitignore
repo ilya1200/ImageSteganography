@@ -22,3 +22,4 @@ venv/
 /ImageSteganographyServer/images/
 /ImageSteganographyServer/images_for_testing/
 /ImageSteganographyServer/storage_testing/
+/ImageSteganographyServer/storage/user_images.json
