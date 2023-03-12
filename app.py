@@ -1,24 +1,20 @@
 import os
 from logging import Logger
 from typing import List, Dict
-import cv2
+
 import numpy
-import requests
 from dotenv import load_dotenv
 from omegaconf import OmegaConf
-from requests import Response
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk.web import SlackResponse
 
 import my_logger
-from ImageSteganographyServer import utils
-from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
-from base_directory import base_directory
+import slack_client_utils
 from ImageSteganographyServer.encoder_decoder import EncoderDecoder
+from ImageSteganographyServer.image_steganography_server import ImageSteganographyServer
 from ImageSteganographyServer.storage.user_image_entry import UserImageEntry
-from PIL import Image
-from io import BytesIO
+from base_directory import base_directory
 
 load_dotenv()
 SLACK_APP_TOKEN: str = os.environ["SLACK_APP_TOKEN"]
@@ -76,24 +72,9 @@ def handle_app_mention(event, say):
     say(f"Encrypting the message {secret_message} into image {file['name']}")
 
     file_id: str = file["id"]
-
     file_info: SlackResponse = app.client.files_info(file=file_id)
-
-    # Extract the URL to download the file
-    download_url: str = file_info["file"]["url_private"]
-
-    # Download the file using requests
-    response: Response = requests.get(download_url, headers={"Authorization": f"Bearer {os.environ['SLACK_BOT_TOKEN']}"})
-    response.raise_for_status()
-
-    # Create a NumPy array from the byte string
-    img_array: numpy.ndarray = numpy.frombuffer(response.content, dtype=numpy.uint8)
-
-    # Reshape the array to the desired dimensions
-    image: numpy.ndarray = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
-
-    # Convert the color format from BGR to RGB
-    image: numpy.ndarray = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image_url_in_slack: str = file_info["file"]["url_private"]
+    image: numpy.ndarray = slack_client_utils.get_image_from_slack_url(image_url_in_slack)
 
     stego_img: numpy.ndarray = EncoderDecoder.encode(image, secret_message)
     logger.debug(f"Encoded the message: {secret_message} into the image.")
