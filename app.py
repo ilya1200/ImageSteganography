@@ -70,7 +70,7 @@ def handle_app_mention(event, say):
 
     secret_message: str = re.sub(r'^\s*\S+\s*', '', text)
     file: dict = files_in_message[0]
-    say(f"Encrypting the message {secret_message} into image {file['name']}...Will message, once done.")
+    say(f"Encrypting the message {secret_message} into image {file['name']}. You will get a message, when it is done.")
 
     file_id: str = file["id"]
     file_info: SlackResponse = app.client.files_info(file=file_id)
