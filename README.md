@@ -21,9 +21,8 @@ This project allows to encode and decode secret messages into and from images.
     * The message should begin with mentioning the bot and then the message to encrypt.
     * One image should be attached.
     * After the message will be sent, the image will be encrypted with the hidden message and stored.
-    * To decipher images that are stored, use the Slack slash-command. In the command specify the manes of the images
-    `/decipher <image_name_1> <image_name_2>...<<image_name_N>`
-  * 
+  * To decipher images that are stored, use the Slack slash-command. In the command specify the manes of the images
+  `/decipher <image_name_1> <image_name_2>...<<image_name_N>`
 
 
 ### Requirements
