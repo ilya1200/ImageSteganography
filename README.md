@@ -13,6 +13,16 @@ This project allows to encode and decode secret messages into and from images.
 
 ### Demo
 [Demo] (https://ilya-livshits.slab.com/posts/image-steganogaphy-demo-q2zgbryt)
+#### Step 1: Call the bot with the message and image to encrypt
+![image](documentation/images/write_message.png)
+#### Step 2: Post the message
+![image](documentation/images/post_message.png)
+#### Step 3: The bot will encrypt the message
+![image](documentation/images/encode_message.png)
+#### Step 4: Call decipher command
+![image](documentation/images/call_decipher_command.png)
+#### Step 5: Retrieve the secret message
+![image](documentation/images/retrieve_message.png)
 
 ## The Slack Bot
    #### How to send an encrypt message inside an image.
